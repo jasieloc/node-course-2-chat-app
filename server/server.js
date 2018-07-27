@@ -23,8 +23,13 @@ io.on('connection', (socket) => {
       return callback('Name and room name are required');
     }
 
+    params.room = params.room.toLowerCase();
     socket.join(params.room);
     users.removeUser(socket.id);
+
+    if (users.getUserList(params.room).includes(params.name)) {
+      return callback('Display Name is already in use. Please choose another');
+    }
     users.addUser(socket.id, params.name, params.room);
 
     io.to(params.room).emit('updateUserList', users.getUserList(params.room));
